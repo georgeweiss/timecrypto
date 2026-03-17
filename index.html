@@ -1,318 +1,210 @@
 <!DOCTYPE html>
 
-<html lang="pt-BR">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>—</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitcoin Value</title>
+  <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
     }
 
 ```
-html {
-  background-color: #080808 !important;
-  height: 100% !important;
-}
-
-body {
-  background-color: #080808 !important;
-  color: #ffffff !important;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  overflow: hidden;
-  height: 100% !important;
-  -webkit-font-smoothing: antialiased;
-}
-
-.wrapper {
-  background-color: #080808;
-  min-height: 100vh;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 28px 24px;
-}
-
-.price-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  line-height: 1;
-}
-
-.price-currency {
-  font-size: clamp(16px, 3vw, 28px);
-  font-weight: 100;
-  color: #666666;
-  margin-top: clamp(8px, 1.5vw, 16px);
-  letter-spacing: 0.05em;
-}
-
-.price-value {
-  font-size: clamp(58px, 15vw, 152px);
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.05em;
-  line-height: 1;
-}
-
-.price-value.loading {
-  color: #222222;
-}
-
-.delta-row {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 6px;
-  min-height: 20px;
-}
-
-.arrow-up {
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 10px solid #ffffff;
-}
-
-.arrow-down {
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 10px solid #555555;
-}
-
-.delta-pct {
-  font-size: clamp(12px, 1.8vw, 16px);
-  font-weight: 300;
-}
-
-.delta-pct.up   { color: #ffffff; }
-.delta-pct.down { color: #555555; }
-
-.delta-label {
-  font-size: clamp(10px, 1.2vw, 12px);
-  font-weight: 300;
-  color: #333333;
-  letter-spacing: 0.15em;
-}
-
-.rule {
-  width: clamp(240px, 55vw, 480px);
-  height: 1px;
-  background-color: #1e1e1e;
-  margin: 22px 0;
-}
-
-.clock {
-  font-size: clamp(80px, 22vw, 188px);
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.05em;
-  line-height: 1;
+div {
   text-align: center;
 }
 
-.colon {
+#conteiner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#current-time {
+  font-size: 120px;
+  margin-bottom: 10px;
+  letter-spacing: -2px;
+}
+
+#bitcoin-value {
+  font-size: 80px;
+  margin-top: 10px;
+}
+
+#delta {
+  font-size: 22px;
+  margin-top: 6px;
+  letter-spacing: 0.05em;
+}
+
+#delta.up   { color: #ffffff; }
+#delta.down { color: #555555; }
+
+#calendar {
+  margin-top: 28px;
+  display: inline-block;
+  text-align: center;
+}
+
+#cal-month {
+  font-size: 13px;
+  letter-spacing: 0.25em;
   color: #ffffff;
-  animation: blink 1s step-start infinite;
-  margin: 0 2px;
+  margin-bottom: 10px;
 }
 
-@keyframes blink {
-  50% { opacity: 0; }
-}
-
-.calendar {
-  margin-top: 20px;
-  width: clamp(220px, 44vw, 320px);
-}
-
-.cal-month-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.cal-month-name {
-  font-size: clamp(13px, 1.8vw, 16px);
-  font-weight: 600;
-  color: #ffffff;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.cal-year {
-  font-size: clamp(11px, 1.4vw, 13px);
-  font-weight: 300;
-  color: #444444;
-  letter-spacing: 0.08em;
-}
-
-.cal-dow {
+#cal-dow {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 6px;
-  border-bottom: 1px solid #1a1a1a;
-  padding-bottom: 6px;
+  grid-template-columns: repeat(7, 32px);
+  gap: 2px;
+  margin-bottom: 4px;
 }
 
-.cal-dow span {
-  font-size: clamp(9px, 1.1vw, 11px);
-  font-weight: 400;
+#cal-dow span {
+  font-size: 10px;
   color: #555555;
   text-align: center;
 }
 
-.cal-grid {
+#cal-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  row-gap: 2px;
+  grid-template-columns: repeat(7, 32px);
+  gap: 2px;
 }
 
 .cal-day {
-  font-size: clamp(11px, 1.4vw, 13px);
-  font-weight: 300;
+  font-size: 12px;
   color: #777777;
   text-align: center;
-  padding: 5px 0;
+  padding: 6px 0;
   line-height: 1;
 }
 
 .cal-day.today {
-  font-weight: 700;
-  color: #000000;
   background-color: #ffffff;
+  color: #000000;
+  font-weight: bold;
   border-radius: 50%;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: clamp(24px, 3.8vw, 30px);
-  height: clamp(24px, 3.8vw, 30px);
-  padding: 0;
   margin: 0 auto;
-  font-size: clamp(11px, 1.4vw, 13px);
+  padding: 0;
+  font-size: 12px;
 }
 ```
 
   </style>
 </head>
 <body>
-<div class="wrapper">
-
-  <div class="price-row">
-    <span class="price-currency">$</span>
-    <span class="price-value loading" id="price">--,---</span>
+  <div id="conteiner">
+    <div id="current-time"></div>
+    <div id="bitcoin-value"></div>
+    <div id="delta"></div>
+    <div id="calendar">
+      <div id="cal-month"></div>
+      <div id="cal-dow">
+        <span>SU</span><span>MO</span><span>TU</span>
+        <span>WE</span><span>TH</span><span>FR</span><span>SA</span>
+      </div>
+      <div id="cal-grid"></div>
+    </div>
   </div>
 
-  <div class="delta-row" id="delta-row"></div>
+  <script>
+    // ── BITCOIN ──
+    const bitcoinValueElement = document.getElementById('bitcoin-value');
+    const deltaElement = document.getElementById('delta');
 
-  <div class="rule"></div>
+    function showPrice(value, change) {
+      bitcoinValueElement.textContent = value.toLocaleString('en-US');
+      const isUp = change >= 0;
+      deltaElement.textContent = (isUp ? '▲ +' : '▼ ') + change.toFixed(2) + '%  24H';
+      deltaElement.className = isUp ? 'up' : 'down';
+    }
 
-  <div class="clock">
-    <span id="hh">--</span><span class="colon">:</span><span id="mm">--</span>
-  </div>
+    function fetchBinance() {
+      return fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT')
+        .then(r => r.json())
+        .then(data => {
+          showPrice(
+            Math.round(parseFloat(data.lastPrice)),
+            parseFloat(data.priceChangePercent)
+          );
+        });
+    }
 
-  <div class="calendar" id="calendar"></div>
+    function fetchFallback() {
+      return fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true')
+        .then(r => r.json())
+        .then(data => {
+          showPrice(
+            Math.round(data.bitcoin.usd),
+            data.bitcoin.usd_24h_change
+          );
+        });
+    }
 
-</div>
-<script>
-  var MONTHS = [
-    'JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE',
-    'JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'
-  ];
+    function fetchBitcoinValue() {
+      fetchBinance().catch(() => fetchFallback().catch(() => {
+        bitcoinValueElement.textContent = 'Error';
+      }));
+    }
 
-function pad(n) { return n < 10 ? ‘0’ + n : ‘’ + n; }
+    fetchBitcoinValue();
+    setInterval(fetchBitcoinValue, 10000);
 
-function buildCalendar(year, month, todayNum) {
-var firstWeekday = new Date(year, month, 1).getDay();
-var daysInMonth  = new Date(year, month + 1, 0).getDate();
-var html = ‘’;
+    // ── CLOCK ──
+    function updateTime() {
+      const now = new Date();
+      const h = now.getHours().toString().padStart(2, '0');
+      const m = now.getMinutes().toString().padStart(2, '0');
+      document.getElementById('current-time').textContent = h + ':' + m;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
 
-```
-html += '<div class="cal-month-row">'
-      + '<span class="cal-month-name">' + MONTHS[month] + '</span>'
-      + '<span class="cal-year">' + year + '</span>'
-      + '</div>';
+    // ── CALENDAR ──
+    const MONTHS = [
+      'JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE',
+      'JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'
+    ];
 
-html += '<div class="cal-dow">'
-      + '<span>SU</span><span>MO</span><span>TU</span>'
-      + '<span>WE</span><span>TH</span><span>FR</span><span>SA</span>'
-      + '</div>';
+    function buildCalendar() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const todayNum = now.getDate();
 
-html += '<div class="cal-grid">';
-for (var i = 0; i < firstWeekday; i++) {
-  html += '<span class="cal-day"></span>';
-}
-for (var d = 1; d <= daysInMonth; d++) {
-  if (d === todayNum) {
-    html += '<span class="cal-day today">' + d + '</span>';
-  } else {
-    html += '<span class="cal-day">' + d + '</span>';
-  }
-}
-html += '</div>';
-return html;
-```
+      document.getElementById('cal-month').textContent = MONTHS[month] + ' ' + year;
 
-}
+      const firstWeekday = new Date(year, month, 1).getDay();
+      const daysInMonth  = new Date(year, month + 1, 0).getDate();
+      const grid = document.getElementById('cal-grid');
+      grid.innerHTML = '';
 
-var lastCalKey = ‘’;
+      for (var i = 0; i < firstWeekday; i++) {
+        const empty = document.createElement('span');
+        empty.className = 'cal-day';
+        grid.appendChild(empty);
+      }
+      for (var d = 1; d <= daysInMonth; d++) {
+        const cell = document.createElement('span');
+        cell.className = 'cal-day' + (d === todayNum ? ' today' : '');
+        cell.textContent = d;
+        grid.appendChild(cell);
+      }
+    }
 
-function tick() {
-var now = new Date();
-document.getElementById(‘hh’).textContent = pad(now.getHours());
-document.getElementById(‘mm’).textContent = pad(now.getMinutes());
-var calKey = now.getFullYear() + ‘-’ + now.getMonth() + ‘-’ + now.getDate();
-if (calKey !== lastCalKey) {
-lastCalKey = calKey;
-document.getElementById(‘calendar’).innerHTML =
-buildCalendar(now.getFullYear(), now.getMonth(), now.getDate());
-}
-}
-
-tick();
-setInterval(tick, 1000);
-
-function fetchPrice() {
-fetch(‘https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT’)
-.then(function(r) { return r.json(); })
-.then(function(t) {
-var price = parseFloat(t.price);
-var el = document.getElementById(‘price’);
-el.textContent = price.toLocaleString(‘en-US’, { maximumFractionDigits: 0 });
-el.classList.remove(‘loading’);
-return fetch(‘https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT’);
-})
-.then(function(r) { return r.json(); })
-.then(function(s) {
-var change = parseFloat(s.priceChangePercent);
-var isUp = change >= 0;
-var sign = isUp ? ‘+’ : ‘’;
-document.getElementById(‘delta-row’).innerHTML =
-‘<span class="' + (isUp ? 'arrow-up' : 'arrow-down') + '"></span>’ +
-‘<span class="delta-pct ' + (isUp ? 'up' : 'down') + '">’ + sign + change.toFixed(2) + ‘%</span>’ +
-‘<span class="delta-label"> / 24H</span>’;
-})
-.catch(function() {
-var el = document.getElementById(‘price’);
-el.textContent = ‘ERR’;
-el.classList.remove(‘loading’);
-});
-}
-
-fetchPrice();
-setInterval(fetchPrice, 30000);
-</script>
+    buildCalendar();
+  </script>
 
 </body>
 </html>
