@@ -11,43 +11,31 @@
       background-color: black;
       color: white;
       font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
 ```
-div {
-  text-align: center;
-}
-
 #conteiner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 #current-time {
   font-size: 120px;
-  margin-bottom: 10px;
   letter-spacing: -2px;
+  line-height: 1;
 }
-
-#bitcoin-value {
-  font-size: 80px;
-  margin-top: 10px;
-}
-
-#delta {
-  font-size: 22px;
-  margin-top: 6px;
-  letter-spacing: 0.05em;
-}
-
-#delta.up   { color: #ffffff; }
-#delta.down { color: #555555; }
 
 #calendar {
-  margin-top: 28px;
-  display: inline-block;
+  margin-top: 24px;
   text-align: center;
 }
 
@@ -63,6 +51,7 @@ div {
   grid-template-columns: repeat(7, 32px);
   gap: 2px;
   margin-bottom: 4px;
+  justify-content: center;
 }
 
 #cal-dow span {
@@ -75,6 +64,7 @@ div {
   display: grid;
   grid-template-columns: repeat(7, 32px);
   gap: 2px;
+  justify-content: center;
 }
 
 .cal-day {
@@ -99,6 +89,21 @@ div {
   padding: 0;
   font-size: 12px;
 }
+
+#bitcoin-value {
+  font-size: 80px;
+  margin-top: 24px;
+  line-height: 1;
+}
+
+#delta {
+  font-size: 22px;
+  margin-top: 8px;
+  letter-spacing: 0.05em;
+}
+
+#delta.up   { color: #4caf7d; }
+#delta.down { color: #c0392b; }
 ```
 
   </style>
@@ -106,61 +111,24 @@ div {
 <body>
   <div id="conteiner">
     <div id="current-time"></div>
-    <div id="bitcoin-value"></div>
-    <div id="delta"></div>
-    <div id="calendar">
-      <div id="cal-month"></div>
-      <div id="cal-dow">
-        <span>SU</span><span>MO</span><span>TU</span>
-        <span>WE</span><span>TH</span><span>FR</span><span>SA</span>
-      </div>
-      <div id="cal-grid"></div>
-    </div>
+
+```
+<div id="calendar">
+  <div id="cal-month"></div>
+  <div id="cal-dow">
+    <span>SU</span><span>MO</span><span>TU</span>
+    <span>WE</span><span>TH</span><span>FR</span><span>SA</span>
+  </div>
+  <div id="cal-grid"></div>
+</div>
+
+<div id="bitcoin-value"></div>
+<div id="delta"></div>
+```
+
   </div>
 
   <script>
-    // ── BITCOIN ──
-    const bitcoinValueElement = document.getElementById('bitcoin-value');
-    const deltaElement = document.getElementById('delta');
-
-    function showPrice(value, change) {
-      bitcoinValueElement.textContent = value.toLocaleString('en-US');
-      const isUp = change >= 0;
-      deltaElement.textContent = (isUp ? '▲ +' : '▼ ') + change.toFixed(2) + '%  24H';
-      deltaElement.className = isUp ? 'up' : 'down';
-    }
-
-    function fetchBinance() {
-      return fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT')
-        .then(r => r.json())
-        .then(data => {
-          showPrice(
-            Math.round(parseFloat(data.lastPrice)),
-            parseFloat(data.priceChangePercent)
-          );
-        });
-    }
-
-    function fetchFallback() {
-      return fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true')
-        .then(r => r.json())
-        .then(data => {
-          showPrice(
-            Math.round(data.bitcoin.usd),
-            data.bitcoin.usd_24h_change
-          );
-        });
-    }
-
-    function fetchBitcoinValue() {
-      fetchBinance().catch(() => fetchFallback().catch(() => {
-        bitcoinValueElement.textContent = 'Error';
-      }));
-    }
-
-    fetchBitcoinValue();
-    setInterval(fetchBitcoinValue, 10000);
-
     // ── CLOCK ──
     function updateTime() {
       const now = new Date();
@@ -202,8 +170,45 @@ div {
         grid.appendChild(cell);
       }
     }
-
     buildCalendar();
+
+    // ── BITCOIN ──
+    const bitcoinValueElement = document.getElementById('bitcoin-value');
+    const deltaElement = document.getElementById('delta');
+
+    function showPrice(value, change) {
+      bitcoinValueElement.textContent = value.toLocaleString('en-US');
+      const isUp = change >= 0;
+      deltaElement.textContent = (isUp ? '▲ +' : '▼ ') + change.toFixed(2) + '%';
+      deltaElement.className = isUp ? 'up' : 'down';
+    }
+
+    function fetchBitcoinValue() {
+      fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT')
+        .then(r => r.json())
+        .then(data => {
+          showPrice(
+            Math.round(parseFloat(data.lastPrice)),
+            parseFloat(data.priceChangePercent)
+          );
+        })
+        .catch(() => {
+          fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true')
+            .then(r => r.json())
+            .then(data => {
+              showPrice(
+                Math.round(data.bitcoin.usd),
+                data.bitcoin.usd_24h_change
+              );
+            })
+            .catch(() => {
+              bitcoinValueElement.textContent = 'Error';
+            });
+        });
+    }
+
+    fetchBitcoinValue();
+    setInterval(fetchBitcoinValue, 10000);
   </script>
 
 </body>
