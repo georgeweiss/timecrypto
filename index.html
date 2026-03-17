@@ -7,54 +7,62 @@
   <title>Bitcoin Value</title>
   <link href='https://fonts.googleapis.com/css?family=Orbitron:400,700' rel='stylesheet' type='text/css'>
   <style>
-    html {
-      height: 100%;
-      background: #000;
-    }
-    body {
-      min-height: 100%;
-      height: 100vh;
-      margin: 0;
-      padding: 0;
-      background: #000;
-      color: #fff;
-      font-family: 'Orbitron', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
 ```
-#conteiner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 88%;
-  max-width: 420px;
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000 !important;
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden;
 }
+
+body {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  background: #000 !important;
+}
+
+.card {
+  width: 88vw;
+  max-width: 420px;
+  border-radius: 18px;
+  background: #000 !important;
+  border: 1px solid #1f1f1f;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 55%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+
+#card-time { padding: 20px; text-align: center; }
 
 #current-time {
   font-size: clamp(56px, 17vw, 96px);
   font-weight: 700;
   letter-spacing: -2px;
-  line-height: 1;
-  text-align: center;
-  width: 100%;
   color: #fff;
+  line-height: 1;
 }
 
-.sep {
-  width: 100%;
-  height: 1px;
-  background: #222;
-  margin: 18px 0;
-}
+#card-cal { padding: 18px 20px 20px; }
 
 #cal-month {
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.3em;
-  color: #888;
+  color: #555;
   margin-bottom: 12px;
   text-transform: uppercase;
   text-align: center;
@@ -64,37 +72,26 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   width: 100%;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
-#cal-dow span {
-  font-size: 10px;
-  color: #444;
-  text-align: center;
-}
+#cal-dow span { font-size: 9px; color: #333; text-align: center; }
 
 #cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   width: 100%;
-  row-gap: 6px;
+  row-gap: 8px;
 }
 
-.cal-day {
-  font-size: 13px;
-  color: #666;
-  text-align: center;
-  padding: 3px 0;
-  line-height: 1;
-}
+.cal-day { font-size: 13px; color: #555; text-align: center; padding: 2px 0; line-height: 1; }
 
 .cal-day.today {
   background: #fff;
   color: #000;
   font-weight: 700;
   border-radius: 50%;
-  width: 26px;
-  height: 26px;
+  width: 26px; height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,25 +100,17 @@
   font-size: 13px;
 }
 
+#card-btc { padding: 20px; text-align: center; }
+
 #bitcoin-value {
-  font-size: clamp(52px, 16vw, 90px);
+  font-size: clamp(48px, 14vw, 80px);
   font-weight: 700;
   letter-spacing: -2px;
-  line-height: 1;
-  text-align: center;
-  width: 100%;
   color: #fff;
+  line-height: 1;
 }
 
-#delta {
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  margin-top: 10px;
-  text-align: center;
-  width: 100%;
-}
-
+#delta { font-size: 13px; font-weight: 400; letter-spacing: 0.1em; margin-top: 8px; }
 #delta.up   { color: #4caf7d; }
 #delta.down { color: #c0392b; }
 ```
@@ -129,19 +118,22 @@
   </style>
 </head>
 <body>
-  <div id="conteiner">
+
+  <div class="card" id="card-time">
     <div id="current-time"></div>
-    <div class="sep"></div>
-    <div id="calendar">
-      <div id="cal-month"></div>
-      <div id="cal-dow">
-        <span>SU</span><span>MO</span><span>TU</span>
-        <span>WE</span><span>TH</span><span>FR</span><span>SA</span>
-      </div>
-      <div id="cal-grid"></div>
+  </div>
+
+  <div class="card" id="card-cal">
+    <div id="cal-month"></div>
+    <div id="cal-dow">
+      <span>SU</span><span>MO</span><span>TU</span>
+      <span>WE</span><span>TH</span><span>FR</span><span>SA</span>
     </div>
-    <div class="sep"></div>
-    <div id="bitcoin-value"></div>
+    <div id="cal-grid"></div>
+  </div>
+
+  <div class="card" id="card-btc">
+    <div id="bitcoin-value">--,---</div>
     <div id="delta"></div>
   </div>
 
@@ -189,22 +181,36 @@
       document.getElementById('delta').className = isUp ? 'up' : 'down';
     }
 
-    function fetchBitcoinValue() {
-      fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT')
-        .then(r => r.json())
-        .then(data => {
-          showPrice(Math.round(parseFloat(data.lastPrice)), parseFloat(data.priceChangePercent));
-        })
-        .catch(() => {
-          fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true')
-            .then(r => r.json())
-            .then(data => { showPrice(Math.round(data.bitcoin.usd), data.bitcoin.usd_24h_change); })
-            .catch(() => { document.getElementById('bitcoin-value').textContent = 'Error'; });
-        });
+    function tryFetch(attempt) {
+      if (attempt === 1) {
+        fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT')
+          .then(r => r.json())
+          .then(data => {
+            showPrice(Math.round(parseFloat(data.lastPrice)), parseFloat(data.priceChangePercent));
+          })
+          .catch(() => tryFetch(2));
+      } else if (attempt === 2) {
+        fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true')
+          .then(r => r.json())
+          .then(data => {
+            showPrice(Math.round(data.bitcoin.usd), data.bitcoin.usd_24h_change);
+          })
+          .catch(() => tryFetch(3));
+      } else {
+        fetch('https://mempool.space/api/v1/prices')
+          .then(r => r.json())
+          .then(data => {
+            document.getElementById('bitcoin-value').textContent = Math.round(data.USD).toLocaleString('en-US');
+            document.getElementById('delta').textContent = '';
+          })
+          .catch(() => {
+            document.getElementById('bitcoin-value').textContent = '---';
+          });
+      }
     }
 
-    fetchBitcoinValue();
-    setInterval(fetchBitcoinValue, 10000);
+    tryFetch(1);
+    setInterval(function() { tryFetch(1); }, 10000);
   </script>
 
 </body>
