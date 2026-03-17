@@ -11,59 +11,52 @@
 
 ```
 html, body {
-  width: 100%;
   height: 100%;
   background: #000 !important;
+  color: #fff;
   font-family: 'Orbitron', sans-serif;
   overflow: hidden;
 }
 
 body {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 16px !important;
-  background: #000 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.card {
-  width: 88vw;
+#conteiner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 88%;
   max-width: 420px;
-  border-radius: 18px;
-  background: #000 !important;
-  border: 1px solid #1f1f1f;
-  position: relative;
-  overflow: hidden;
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 55%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-}
-
-#card-time { padding: 20px; text-align: center; }
-
+/* HORA */
 #current-time {
-  font-size: clamp(56px, 17vw, 96px);
+  font-size: clamp(64px, 20vw, 110px);
   font-weight: 700;
   letter-spacing: -2px;
-  color: #fff;
   line-height: 1;
+  text-align: center;
+  width: 100%;
+  color: #fff;
+  padding: 0 0 20px 0;
+  border-bottom: 1px solid #1f1f1f;
 }
 
-#card-cal { padding: 18px 20px 20px; }
+/* CALENDÁRIO */
+#calendar {
+  width: 100%;
+  padding: 20px 0;
+  border-bottom: 1px solid #1f1f1f;
+}
 
 #cal-month {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.3em;
-  color: #555;
-  margin-bottom: 12px;
+  color: #888;
+  margin-bottom: 14px;
   text-transform: uppercase;
   text-align: center;
 }
@@ -75,7 +68,11 @@ body {
   margin-bottom: 8px;
 }
 
-#cal-dow span { font-size: 9px; color: #333; text-align: center; }
+#cal-dow span {
+  font-size: 10px;
+  color: #444;
+  text-align: center;
+}
 
 #cal-grid {
   display: grid;
@@ -84,33 +81,50 @@ body {
   row-gap: 8px;
 }
 
-.cal-day { font-size: 13px; color: #555; text-align: center; padding: 2px 0; line-height: 1; }
+.cal-day {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  padding: 3px 0;
+  line-height: 1;
+}
 
 .cal-day.today {
   background: #fff;
   color: #000;
   font-weight: 700;
   border-radius: 50%;
-  width: 26px; height: 26px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
   padding: 0;
-  font-size: 13px;
+  font-size: 14px;
 }
 
-#card-btc { padding: 20px; text-align: center; }
-
+/* PREÇO */
 #bitcoin-value {
-  font-size: clamp(48px, 14vw, 80px);
+  font-size: clamp(64px, 20vw, 110px);
   font-weight: 700;
   letter-spacing: -2px;
-  color: #fff;
   line-height: 1;
+  text-align: center;
+  width: 100%;
+  color: #fff;
+  padding-top: 20px;
 }
 
-#delta { font-size: 13px; font-weight: 400; letter-spacing: 0.1em; margin-top: 8px; }
+#delta {
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  margin-top: 10px;
+  text-align: center;
+  width: 100%;
+}
+
 #delta.up   { color: #4caf7d; }
 #delta.down { color: #c0392b; }
 ```
@@ -118,23 +132,24 @@ body {
   </style>
 </head>
 <body>
+  <div id="conteiner">
 
-  <div class="card" id="card-time">
-    <div id="current-time"></div>
+```
+<div id="current-time"></div>
+
+<div id="calendar">
+  <div id="cal-month"></div>
+  <div id="cal-dow">
+    <span>SU</span><span>MO</span><span>TU</span>
+    <span>WE</span><span>TH</span><span>FR</span><span>SA</span>
   </div>
+  <div id="cal-grid"></div>
+</div>
 
-  <div class="card" id="card-cal">
-    <div id="cal-month"></div>
-    <div id="cal-dow">
-      <span>SU</span><span>MO</span><span>TU</span>
-      <span>WE</span><span>TH</span><span>FR</span><span>SA</span>
-    </div>
-    <div id="cal-grid"></div>
-  </div>
+<div id="bitcoin-value"></div>
+<div id="delta"></div>
+```
 
-  <div class="card" id="card-btc">
-    <div id="bitcoin-value">--,---</div>
-    <div id="delta"></div>
   </div>
 
   <script>
@@ -185,27 +200,18 @@ body {
       if (attempt === 1) {
         fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT')
           .then(r => r.json())
-          .then(data => {
-            showPrice(Math.round(parseFloat(data.lastPrice)), parseFloat(data.priceChangePercent));
-          })
+          .then(data => { showPrice(Math.round(parseFloat(data.lastPrice)), parseFloat(data.priceChangePercent)); })
           .catch(() => tryFetch(2));
       } else if (attempt === 2) {
         fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true')
           .then(r => r.json())
-          .then(data => {
-            showPrice(Math.round(data.bitcoin.usd), data.bitcoin.usd_24h_change);
-          })
+          .then(data => { showPrice(Math.round(data.bitcoin.usd), data.bitcoin.usd_24h_change); })
           .catch(() => tryFetch(3));
       } else {
         fetch('https://mempool.space/api/v1/prices')
           .then(r => r.json())
-          .then(data => {
-            document.getElementById('bitcoin-value').textContent = Math.round(data.USD).toLocaleString('en-US');
-            document.getElementById('delta').textContent = '';
-          })
-          .catch(() => {
-            document.getElementById('bitcoin-value').textContent = '---';
-          });
+          .then(data => { document.getElementById('bitcoin-value').textContent = Math.round(data.USD).toLocaleString('en-US'); })
+          .catch(() => { document.getElementById('bitcoin-value').textContent = '---'; });
       }
     }
 
