@@ -5,20 +5,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>—</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;900&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;900&display=swap');
 
 ```
-html, body {
-  height: 100%;
-  background: #000;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { height: 100% !important; background: #000 !important; }
+
+body {
+  height: 100% !important;
+  background: #000 !important;
   color: #f0f0f0;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
   overflow: hidden;
 }
 
-/* scanlines */
 body::before {
   content: '';
   position: fixed; inset: 0;
@@ -29,13 +31,12 @@ body::before {
   pointer-events: none; z-index: 100;
 }
 
-/* grid */
 body::after {
   content: '';
   position: fixed; inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
   background-size: 44px 44px;
   pointer-events: none; z-index: 0;
 }
@@ -45,90 +46,155 @@ body::after {
   height: 100vh;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
+  gap: 0;
   padding: 24px;
 }
 
-/* PRICE */
+/* ── PRICE ── */
 .price-row {
   display: flex; align-items: baseline; gap: 10px;
 }
-
 .price-currency {
+  font-family: 'Share Tech Mono', monospace;
   font-size: clamp(18px, 3vw, 32px);
   color: #555;
 }
-
 .price-value {
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(52px, 13vw, 138px);
+  font-family: 'Orbitron', 'Arial Black', sans-serif;
+  font-size: clamp(48px, 13vw, 130px);
   font-weight: 900;
+  color: #f0f0f0;
   letter-spacing: -0.02em;
   transition: opacity 0.3s;
 }
 .price-value.loading { opacity: 0.12; }
 
-/* DELTA */
+/* ── DELTA ── */
 .delta-row {
-  display: flex; align-items: center; gap: 8px;
-  margin-top: 10px; height: 26px;
+  display: flex; align-items: center; gap: 9px;
+  margin-top: 12px; min-height: 26px;
 }
-
 .arrow-up {
   width: 0; height: 0;
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
-  border-bottom: 13px solid #e0e0e0;
+  border-bottom: 14px solid #e0e0e0;
+  flex-shrink: 0;
 }
 .arrow-down {
   width: 0; height: 0;
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
-  border-top: 13px solid #4a4a4a;
+  border-top: 14px solid #4a4a4a;
+  flex-shrink: 0;
 }
-
 .delta-pct {
+  font-family: 'Share Tech Mono', monospace;
   font-size: clamp(13px, 1.8vw, 18px);
   letter-spacing: 0.05em;
 }
 .delta-pct.up   { color: #d0d0d0; }
-.delta-pct.down { color: #4a4a4a; }
-
+.delta-pct.down { color: #505050; }
 .delta-label {
+  font-family: 'Share Tech Mono', monospace;
   font-size: clamp(10px, 1.2vw, 13px);
-  color: #555; letter-spacing: 0.15em;
+  color: #444; letter-spacing: 0.15em;
 }
 
-/* DIVIDER */
+/* ── DIVIDER ── */
 .divider {
   width: clamp(160px, 42vw, 440px);
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
-  margin: 28px 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  margin: 30px 0;
 }
 
-/* CLOCK */
+/* ── CLOCK (bigger, no seconds) ── */
 .clock-time {
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(38px, 9vw, 96px);
-  font-weight: 400;
+  font-family: 'Orbitron', 'Arial Black', sans-serif;
+  font-size: clamp(64px, 18vw, 160px);
+  font-weight: 900;
   color: #c8c8c8;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   line-height: 1;
   text-align: center;
 }
 .colon { animation: blink 1s step-start infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
-.clock-date {
-  font-size: clamp(11px, 1.4vw, 14px);
+/* ── CALENDAR ── */
+.calendar {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: clamp(220px, 38vw, 320px);
+}
+
+/* month header */
+.cal-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 10px;
+}
+.cal-month {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(11px, 1.5vw, 14px);
+  font-weight: 400;
+  letter-spacing: 0.3em;
   color: #555;
-  letter-spacing: 0.22em;
-  margin-top: 10px;
-  text-align: center;
   text-transform: uppercase;
 }
 
-/* flash on price update */
+/* day-of-week row */
+.cal-dow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+  margin-bottom: 6px;
+}
+.cal-dow span {
+  font-size: clamp(9px, 1.2vw, 11px);
+  color: #3a3a3a;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+/* days grid */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  width: 100%;
+}
+.cal-day {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(10px, 1.4vw, 13px);
+  color: #3a3a3a;
+  text-align: center;
+  padding: clamp(3px, 0.6vw, 6px) 0;
+  border-radius: 4px;
+}
+.cal-day.today {
+  background: #f0f0f0;
+  color: #000;
+  font-weight: bold;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  width: clamp(22px, 3.2vw, 30px);
+  height: clamp(22px, 3.2vw, 30px);
+  padding: 0;
+}
+.cal-day.other-month { opacity: 0; pointer-events: none; }
+
 @keyframes flashIn {
   0%   { text-shadow: 0 0 40px rgba(255,255,255,0.6); }
   100% { text-shadow: none; }
@@ -151,55 +217,94 @@ body::after {
   <div class="divider"></div>
 
   <div class="clock-time">
-    <span id="hh">00</span><span class="colon">:</span><span
-          id="mm">00</span><span class="colon">:</span><span id="ss">00</span>
+    <span id="hh">00</span><span class="colon">:</span><span id="mm">00</span>
   </div>
-  <div class="clock-date" id="clock-date"></div>
+
+  <div class="calendar" id="calendar"></div>
 
 </div>
 <script>
-  // ── RELÓGIO ──
-  const DAYS   = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-  const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const MONTHS_LONG = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE',
+                       'JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
   const pad = n => String(n).padStart(2,'0');
 
-function tick(){
+function buildCalendar(year, month, today) {
+const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+```
+let html = `
+  <div class="cal-header">
+    <span class="cal-month">${MONTHS_LONG[month]} ${year}</span>
+  </div>
+  <div class="cal-dow">
+    <span>S</span><span>M</span><span>T</span><span>W</span>
+    <span>T</span><span>F</span><span>S</span>
+  </div>
+  <div class="cal-grid">
+`;
+
+// leading blanks
+for (let i = 0; i < firstDay; i++) {
+  html += '<span class="cal-day other-month"></span>';
+}
+
+for (let d = 1; d <= daysInMonth; d++) {
+  if (d === today) {
+    html += `<span class="cal-day today">${d}</span>`;
+  } else {
+    html += `<span class="cal-day">${d}</span>`;
+  }
+}
+
+html += '</div>';
+return html;
+```
+
+}
+
+function tick() {
 const d = new Date();
 document.getElementById(‘hh’).textContent = pad(d.getHours());
 document.getElementById(‘mm’).textContent = pad(d.getMinutes());
-document.getElementById(‘ss’).textContent = pad(d.getSeconds());
-document.getElementById(‘clock-date’).textContent =
-`${DAYS[d.getDay()]} — ${pad(d.getDate())} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+
+```
+// rebuild calendar only when day changes
+const key = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+if (tick._lastKey !== key) {
+  tick._lastKey = key;
+  document.getElementById('calendar').innerHTML =
+    buildCalendar(d.getFullYear(), d.getMonth(), d.getDate());
+}
+```
+
 }
 tick();
 setInterval(tick, 1000);
 
-// ── PREÇO (Binance — funciona sem restrição de CORS) ──
-async function fetchPrice(){
+async function fetchPrice() {
 try {
 const [t, s] = await Promise.all([
 fetch(‘https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT’).then(r=>r.json()),
 fetch(‘https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT’).then(r=>r.json())
 ]);
+const price  = parseFloat(t.price);
+const change = parseFloat(s.priceChangePercent);
+const isUp   = change >= 0;
 
 ```
-  const price  = parseFloat(t.price);
-  const change = parseFloat(s.priceChangePercent);
-  const isUp   = change >= 0;
-
   const el = document.getElementById('price');
   el.textContent = price.toLocaleString('en-US', {maximumFractionDigits:0});
   el.classList.remove('loading');
   el.classList.add('flash');
-  setTimeout(()=> el.classList.remove('flash'), 800);
+  setTimeout(() => el.classList.remove('flash'), 800);
 
   const sign = isUp ? '+' : '';
-  document.getElementById('delta-row').innerHTML = `
-    <span class="${isUp ? 'arrow-up' : 'arrow-down'}"></span>
-    <span class="delta-pct ${isUp ? 'up' : 'down'}">${sign}${change.toFixed(2)}%</span>
-    <span class="delta-label">/ 24H</span>
-  `;
-} catch(e){
+  document.getElementById('delta-row').innerHTML =
+    '<span class="' + (isUp ? 'arrow-up' : 'arrow-down') + '"></span>' +
+    '<span class="delta-pct ' + (isUp ? 'up' : 'down') + '">' + sign + change.toFixed(2) + '%</span>' +
+    '<span class="delta-label">/ 24H</span>';
+} catch(e) {
   document.getElementById('price').textContent = '–';
 }
 ```
