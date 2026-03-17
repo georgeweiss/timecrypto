@@ -5,101 +5,126 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bitcoin Value</title>
-  <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Orbitron:400,700' rel='stylesheet' type='text/css'>
   <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: 'Orbitron', sans-serif;
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
 ```
+body {
+  background-color: black;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
 #conteiner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  width: 100%;
+  padding: 0 24px;
+  gap: 0;
 }
 
+/* HORA */
 #current-time {
-  font-size: 120px;
+  font-size: clamp(64px, 22vw, 110px);
+  font-weight: 700;
   letter-spacing: -2px;
   line-height: 1;
+  text-align: center;
+  width: 100%;
 }
 
+/* SEPARADOR */
+.sep {
+  width: 60%;
+  height: 1px;
+  background: #1c1c1c;
+  margin: 22px 0;
+}
+
+/* CALENDÁRIO */
 #calendar {
-  margin-top: 24px;
   text-align: center;
+  width: 100%;
 }
 
 #cal-month {
-  font-size: 13px;
-  letter-spacing: 0.25em;
-  color: #ffffff;
-  margin-bottom: 10px;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: #888;
+  margin-bottom: 18px;
+  text-transform: uppercase;
 }
 
 #cal-dow {
   display: grid;
-  grid-template-columns: repeat(7, 32px);
-  gap: 2px;
-  margin-bottom: 4px;
-  justify-content: center;
+  grid-template-columns: repeat(7, 1fr);
+  width: 90%;
+  margin: 0 auto 10px auto;
 }
 
 #cal-dow span {
-  font-size: 10px;
-  color: #555555;
+  font-size: 11px;
+  color: #444;
   text-align: center;
+  letter-spacing: 0.05em;
 }
 
 #cal-grid {
   display: grid;
-  grid-template-columns: repeat(7, 32px);
-  gap: 2px;
-  justify-content: center;
+  grid-template-columns: repeat(7, 1fr);
+  width: 90%;
+  margin: 0 auto;
+  row-gap: 8px;
 }
 
 .cal-day {
-  font-size: 12px;
-  color: #777777;
+  font-size: 14px;
+  color: #666;
   text-align: center;
-  padding: 6px 0;
+  padding: 4px 0;
   line-height: 1;
 }
 
 .cal-day.today {
   background-color: #ffffff;
   color: #000000;
-  font-weight: bold;
+  font-weight: 700;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
   padding: 0;
-  font-size: 12px;
+  font-size: 14px;
 }
 
+/* PREÇO */
 #bitcoin-value {
-  font-size: 80px;
-  margin-top: 24px;
+  font-size: clamp(52px, 18vw, 90px);
+  font-weight: 700;
+  letter-spacing: -1px;
   line-height: 1;
+  text-align: center;
+  width: 100%;
 }
 
+/* DELTA */
 #delta {
-  font-size: 22px;
-  margin-top: 8px;
-  letter-spacing: 0.05em;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  margin-top: 12px;
+  text-align: center;
+  width: 100%;
 }
 
 #delta.up   { color: #4caf7d; }
@@ -110,9 +135,12 @@
 </head>
 <body>
   <div id="conteiner">
-    <div id="current-time"></div>
 
 ```
+<div id="current-time"></div>
+
+<div class="sep"></div>
+
 <div id="calendar">
   <div id="cal-month"></div>
   <div id="cal-dow">
@@ -121,6 +149,8 @@
   </div>
   <div id="cal-grid"></div>
 </div>
+
+<div class="sep"></div>
 
 <div id="bitcoin-value"></div>
 <div id="delta"></div>
@@ -173,14 +203,11 @@
     buildCalendar();
 
     // ── BITCOIN ──
-    const bitcoinValueElement = document.getElementById('bitcoin-value');
-    const deltaElement = document.getElementById('delta');
-
     function showPrice(value, change) {
-      bitcoinValueElement.textContent = value.toLocaleString('en-US');
+      document.getElementById('bitcoin-value').textContent = value.toLocaleString('en-US');
       const isUp = change >= 0;
-      deltaElement.textContent = (isUp ? '▲ +' : '▼ ') + change.toFixed(2) + '%';
-      deltaElement.className = isUp ? 'up' : 'down';
+      document.getElementById('delta').textContent = (isUp ? '▲ +' : '▼ ') + change.toFixed(2) + '%';
+      document.getElementById('delta').className = isUp ? 'up' : 'down';
     }
 
     function fetchBitcoinValue() {
@@ -196,13 +223,10 @@
           fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true')
             .then(r => r.json())
             .then(data => {
-              showPrice(
-                Math.round(data.bitcoin.usd),
-                data.bitcoin.usd_24h_change
-              );
+              showPrice(Math.round(data.bitcoin.usd), data.bitcoin.usd_24h_change);
             })
             .catch(() => {
-              bitcoinValueElement.textContent = 'Error';
+              document.getElementById('bitcoin-value').textContent = 'Error';
             });
         });
     }
