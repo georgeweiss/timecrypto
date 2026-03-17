@@ -1,21 +1,214 @@
 <!DOCTYPE html>
-<html lang="en">
 
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bitcoin Value</title>
-  <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="style.css">
-</head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>—</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+```
+html, body {
+  height: 100%;
+  background: #000;
+  color: #f0f0f0;
+  font-family: 'Share Tech Mono', monospace;
+  overflow: hidden;
+}
+
+/* scanlines */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px
+  );
+  pointer-events: none; z-index: 100;
+}
+
+/* grid */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none; z-index: 0;
+}
+
+.wrapper {
+  position: relative; z-index: 10;
+  height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+
+/* PRICE */
+.price-row {
+  display: flex; align-items: baseline; gap: 10px;
+}
+
+.price-currency {
+  font-size: clamp(18px, 3vw, 32px);
+  color: #555;
+}
+
+.price-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(52px, 13vw, 138px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  transition: opacity 0.3s;
+}
+.price-value.loading { opacity: 0.12; }
+
+/* DELTA */
+.delta-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 10px; height: 26px;
+}
+
+.arrow-up {
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 13px solid #e0e0e0;
+}
+.arrow-down {
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 13px solid #4a4a4a;
+}
+
+.delta-pct {
+  font-size: clamp(13px, 1.8vw, 18px);
+  letter-spacing: 0.05em;
+}
+.delta-pct.up   { color: #d0d0d0; }
+.delta-pct.down { color: #4a4a4a; }
+
+.delta-label {
+  font-size: clamp(10px, 1.2vw, 13px);
+  color: #555; letter-spacing: 0.15em;
+}
+
+/* DIVIDER */
+.divider {
+  width: clamp(160px, 42vw, 440px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+  margin: 28px 0;
+}
+
+/* CLOCK */
+.clock-time {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(38px, 9vw, 96px);
+  font-weight: 400;
+  color: #c8c8c8;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-align: center;
+}
+.colon { animation: blink 1s step-start infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.clock-date {
+  font-size: clamp(11px, 1.4vw, 14px);
+  color: #555;
+  letter-spacing: 0.22em;
+  margin-top: 10px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* flash on price update */
+@keyframes flashIn {
+  0%   { text-shadow: 0 0 40px rgba(255,255,255,0.6); }
+  100% { text-shadow: none; }
+}
+.flash { animation: flashIn 0.7s ease-out; }
+```
+
+  </style>
+</head>
 <body>
-  <div id="conteiner">
-    <div id="current-time"></div>
-    <div id="bitcoin-value"></div>
+<div class="wrapper">
+
+  <div class="price-row">
+    <span class="price-currency">$</span>
+    <div class="price-value loading" id="price">––,–––</div>
   </div>
 
-  <script src="script.js"></script>
-</body>
+  <div class="delta-row" id="delta-row"></div>
 
+  <div class="divider"></div>
+
+  <div class="clock-time">
+    <span id="hh">00</span><span class="colon">:</span><span
+          id="mm">00</span><span class="colon">:</span><span id="ss">00</span>
+  </div>
+  <div class="clock-date" id="clock-date"></div>
+
+</div>
+<script>
+  // ── RELÓGIO ──
+  const DAYS   = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const pad = n => String(n).padStart(2,'0');
+
+function tick(){
+const d = new Date();
+document.getElementById(‘hh’).textContent = pad(d.getHours());
+document.getElementById(‘mm’).textContent = pad(d.getMinutes());
+document.getElementById(‘ss’).textContent = pad(d.getSeconds());
+document.getElementById(‘clock-date’).textContent =
+`${DAYS[d.getDay()]} — ${pad(d.getDate())} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+tick();
+setInterval(tick, 1000);
+
+// ── PREÇO (Binance — funciona sem restrição de CORS) ──
+async function fetchPrice(){
+try {
+const [t, s] = await Promise.all([
+fetch(‘https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT’).then(r=>r.json()),
+fetch(‘https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT’).then(r=>r.json())
+]);
+
+```
+  const price  = parseFloat(t.price);
+  const change = parseFloat(s.priceChangePercent);
+  const isUp   = change >= 0;
+
+  const el = document.getElementById('price');
+  el.textContent = price.toLocaleString('en-US', {maximumFractionDigits:0});
+  el.classList.remove('loading');
+  el.classList.add('flash');
+  setTimeout(()=> el.classList.remove('flash'), 800);
+
+  const sign = isUp ? '+' : '';
+  document.getElementById('delta-row').innerHTML = `
+    <span class="${isUp ? 'arrow-up' : 'arrow-down'}"></span>
+    <span class="delta-pct ${isUp ? 'up' : 'down'}">${sign}${change.toFixed(2)}%</span>
+    <span class="delta-label">/ 24H</span>
+  `;
+} catch(e){
+  document.getElementById('price').textContent = '–';
+}
+```
+
+}
+
+fetchPrice();
+setInterval(fetchPrice, 30000);
+</script>
+
+</body>
 </html>
